@@ -6,8 +6,6 @@
       = {{ result }}
     </div>
     <div class="keyboard">
-      <!--      <button @click="result = +op1 + +op2">+</button>-->
-      <!--      <button @click="result = op1 + op2">+</button>-->
       <button @click="sum">+</button>
       <button @click="sub">-</button>
       <button @click="div">/</button>

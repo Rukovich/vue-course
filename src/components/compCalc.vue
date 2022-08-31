@@ -1,7 +1,6 @@
 <template>
   <div>
     <div class="error" v-if="error">{{ error }}</div>
-    <!--    <div class="error" v-show="error">{{ error }}</div>-->
     <div class="msg">
       <template v-if="result < 0">Отрицательный результат</template>
       <template v-else-if="result < 100">Результат меньше 100</template>
@@ -10,8 +9,7 @@
     <div class="main">
       <input type="number" v-model.number="op1" />
       <input type="number" v-model.number="op2" />
-      = {{ result }}<br />
-      fib = {{ fibResult }}
+      = {{ result }}
     </div>
 
     <div class="keyboard">
@@ -23,12 +21,23 @@
         {{ operation }}
       </button>
     </div>
+    <!-- Чекбокс с клавиатурой -->
+    <input type="checkbox" id="checkbox" v-model="checked" />
+    <label for="checkbox">Отобразить экранную клавиатуру</label>
+    <br />
+
+    <button v-for="keyboard of keyboard" :key="keyboard">
+      {{ keyboard }}
+    </button>
+
     <div class="logs">
       {{ logs }}
     </div>
+
     <button @click="counter++">{{ getCounter }}</button>
   </div>
 </template>
+
 <script>
 export default {
   name: 'compCalc',
@@ -40,7 +49,9 @@ export default {
     operations: ['+', '-', '/', '*'],
     logs: {},
     fibResult: 0,
-    counter: 0
+    counter: 0,
+    // Клавиатура
+    keyboard: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '<-']
   }),
   methods: {
 
@@ -92,12 +103,6 @@ export default {
   },
 
   computed: {
-    fib1 () {
-      return this.fib(this.op1)
-    },
-    fib2 () {
-      return this.fib(this.op2)
-    },
     getCounter () {
       console.log('getCounter')
       return `Счетчик нажатий: ${this.counter}`

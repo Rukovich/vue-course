@@ -1,11 +1,13 @@
 <template>
   <div>
     <div class="error" v-if="error">{{ error }}</div>
+
     <div class="msg">
       <template v-if="result < 0">Отрицательный результат</template>
       <template v-else-if="result < 100">Результат меньше 100</template>
       <template v-else>Результат</template>
     </div>
+
     <div class="main">
       <input type="number" v-model.number="op1" />
       <input type="number" v-model.number="op2" />
@@ -21,14 +23,40 @@
         {{ operation }}
       </button>
     </div>
-    <!-- Чекбокс с клавиатурой -->
-    <input type="checkbox" id="checkbox" v-model="checked" />
-    <label for="checkbox">Отобразить экранную клавиатуру</label>
-    <br />
 
-    <button v-for="keyboard of keyboard" :key="keyboard">
-      {{ keyboard }}
-    </button>
+    <!-- Чекбокс с клавиатурой -->
+    <div>
+      <input
+        id="virtualKeyboard"
+        type="checkbox"
+        v-model="showKeyboard"
+        :checked="showKeyboard"
+      />
+      <label for="virtualKeyboard">Показать клавиатуру</label>
+    </div>
+
+    <div v-show="showKeyboard">
+      <div>
+        <input id="operand1" type="radio" value="op1" v-model="activeOperand" />
+        <label for="operand1">op 1</label>
+        <input id="operand2" type="radio" value="op2" v-model="activeOperand" />
+        <label for="operand2">op 2</label>
+      </div>
+
+      <div>
+        <button
+          v-for="digit of digits"
+          :key="digit"
+          @click="keyboardClick(digit)"
+        >
+          {{ digit }}
+        </button>
+        <button @click="backSpace">Backspace</button>
+      </div>
+    </div>
+    <!-- Чекбокс с клавиатурой -->
+
+    <br />
 
     <div class="logs">
       {{ logs }}
@@ -46,13 +74,16 @@ export default {
     op2: 0,
     result: 0,
     error: '',
-    operations: ['+', '-', '/', '*'],
+    operations: ['+', '-', '/', '*', '^', '/='],
     logs: {},
     fibResult: 0,
     counter: 0,
     // Клавиатура
-    keyboard: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '<-']
+    showKeyboard: false,
+    digits: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0],
+    activeOperand: 'op1'
   }),
+
   methods: {
 
     calculate (operation) {
@@ -63,11 +94,27 @@ export default {
         case '-': this.sub(); break
         case '/': this.div(); break
         case '*': this.mult(); break
+        case '^': this.exp(); break
+        case '/=': this.intDiv(); break
       }
-
       const { op1, op2, result } = this
       console.log(Date.now())
       this.$set(this.logs, Date.now(), `${op1} ${operation} ${op2} = ${result}`)
+    },
+
+    keyboardClick (digit) {
+      const selectedOperandValue = this[this.activeOperand]
+
+      if (typeof selectedOperandValue === 'number') {
+        this[this.activeOperand] = Number(`${selectedOperandValue}${digit}`)
+      }
+    },
+    backSpace () {
+      const selectedOperandValue = this[this.activeOperand]
+
+      if (typeof selectedOperandValue === 'number') {
+        this[this.activeOperand] = Math.trunc(selectedOperandValue / 10)
+      }
     },
 
     sum () {
